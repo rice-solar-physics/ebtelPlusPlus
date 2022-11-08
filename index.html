@@ -249,13 +249,6 @@
     <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
       
         <li class="md-nav__item">
-  <a href="#citation" class="md-nav__link">
-    Citation
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
   <a href="#dependencies" class="md-nav__link">
     Dependencies
   </a>
@@ -265,6 +258,20 @@
         <li class="md-nav__item">
   <a href="#installation" class="md-nav__link">
     Installation
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#testing" class="md-nav__link">
+    Testing
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#citation" class="md-nav__link">
+    Citation
   </a>
   
 </li>
@@ -334,13 +341,6 @@
     <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
       
         <li class="md-nav__item">
-  <a href="#citation" class="md-nav__link">
-    Citation
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
   <a href="#dependencies" class="md-nav__link">
     Dependencies
   </a>
@@ -350,6 +350,20 @@
         <li class="md-nav__item">
   <a href="#installation" class="md-nav__link">
     Installation
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#testing" class="md-nav__link">
+    Testing
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#citation" class="md-nav__link">
+    Citation
   </a>
   
 </li>
@@ -375,19 +389,9 @@
 
 
 <h1 id="ebtel">ebtel++</h1>
-<p><a href="https://travis-ci.org/rice-solar-physics/ebtelPlusPlus"><img alt="Build Status" src="https://travis-ci.org/rice-solar-physics/ebtelPlusPlus.svg?branch=master" /></a></p>
 <p><a href="https://github.com/rice-solar-physics/ebtelPlusPlus">ebtel++</a> is a two-fluid version of the original enthalpy-based thermal evolution of loops (EBTEL) model implemented in C++. This code provides an enhanced description of plasma behavior above roughly 5 MK. Further generic details about EBTEL can be found in the <a href="https://github.com/rice-solar-physics/EBTEL">repository for the original IDL code</a> and in the references listed below.</p>
 <p>The EBTEL model, originally developed by <a href="http://adsabs.harvard.edu/abs/2008ApJ...682.1351K" title="Klimchuk et al. (2008)">Klimchuk et al. (2008)</a> efficiently computes spatially-averaged, time-dependent plasma parameters ( e.g. temperature,  pressure, density) of dynamically-heated coronal loops. It is often desirable to compute solutions for a large number of coronal loops, but the spatial and temporal scales needed to solve the full 1D-hydrodynamic equations lead to long compute times for even 1D hydrodynamic codes. EBTEL computes quick and accurate solutions for spatially-averaged quantities, allowing efficient insight into how these monolithic structures evolve. <a href="http://adsabs.harvard.edu/abs/2016ApJ...829...31B" title="Barnes et al. (2016)">Barnes et al. (2016)</a> improved upon this model by extending the treatment to the two-fluid hydrodynamic equations, allowing for differential heating between electrons and ions. Experienced EBTEL users should note the slightly different model for calculating the the c1 parameter during conductive cooling (see Appendix A of <a href="http://adsabs.harvard.edu/abs/2016ApJ...829...31B" title="Barnes et al. (2016)">Barnes et al., 2016</a>).</p>
 <p>EBTEL also calculates the differential emission measure (DEM) for both the transition region and the corona. Details regarding this formulation can be found in <a href="http://adsabs.harvard.edu/abs/2008ApJ...682.1351K" title="Klimchuk et al. (2008)">Klimchuk et al. (2008)</a></p>
-<h2 id="citation">Citation</h2>
-<p>If you use ebtel++ in any published work, please include the following citations and mention the use of this code.</p>
-<ul>
-<li><a href="http://adsabs.harvard.edu/abs/2008ApJ...682.1351K" title="Klimchuk et al. (2008)">Klimchuk et al. (2008)</a></li>
-<li><a href="http://adsabs.harvard.edu/abs/2012ApJ...752..161C" title="Cargill et al. (2012a)">Cargill et al. (2012a)</a></li>
-<li><a href="cargill_2012b">Cargill et al. (2012b)</a></li>
-<li><a href="http://adsabs.harvard.edu/abs/2016ApJ...829...31B" title="Barnes et al. (2016)">Barnes et al. (2016)</a></li>
-</ul>
-<p>The first three papers detail the original single-fluid EBTEL model while the last paper gives the details of the two-fluid model. In particular, the details of how the two-fluid EBTEL equations are derived can be found in the appendix of <a href="http://adsabs.harvard.edu/abs/2016ApJ...829...31B" title="Barnes et al. (2016)">Barnes et al. (2016)</a>.</p>
 <h2 id="dependencies">Dependencies</h2>
 <p>To compile ebtel++, first install the following dependencies,</p>
 <ul>
@@ -422,8 +426,10 @@ $ scons
 <div class="codehilite"><pre><span></span><code>$ bin/ebtel++.run
 </code></pre></div>
 
+<h2 id="testing">Testing</h2>
 <p>If you've installed the above Python dependencies, you can also run the tests using,</p>
-<div class="codehilite"><pre><span></span><code>$ scons --test
+<div class="codehilite"><pre><span></span><code>$ pip install -r requirements/requirements-test.txt
+$ pytest
 </code></pre></div>
 
 <p>or run any of the three included examples,</p>
@@ -431,6 +437,16 @@ $ scons
 $ python examples/ex2.py
 $ python examples/ex3.py
 </code></pre></div>
+
+<h2 id="citation">Citation</h2>
+<p>If you use ebtel++ in any published work, please include the following citations and mention the use of this code.</p>
+<ul>
+<li><a href="http://adsabs.harvard.edu/abs/2008ApJ...682.1351K" title="Klimchuk et al. (2008)">Klimchuk et al. (2008)</a></li>
+<li><a href="http://adsabs.harvard.edu/abs/2012ApJ...752..161C" title="Cargill et al. (2012a)">Cargill et al. (2012a)</a></li>
+<li><a href="http://adsabs.harvard.edu/abs/2012ApJ...758....5C" title="Cargill et al. (2012b)">Cargill et al. (2012b)</a></li>
+<li><a href="http://adsabs.harvard.edu/abs/2016ApJ...829...31B" title="Barnes et al. (2016)">Barnes et al. (2016)</a></li>
+</ul>
+<p>The first three papers detail the original single-fluid EBTEL model while the last paper gives the details of the two-fluid model. In particular, the details of how the two-fluid EBTEL equations are derived can be found in the appendix of <a href="http://adsabs.harvard.edu/abs/2016ApJ...829...31B" title="Barnes et al. (2016)">Barnes et al. (2016)</a>.</p>
 
 
 
