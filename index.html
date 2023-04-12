@@ -261,6 +261,19 @@
     Installation
   </a>
   
+    <nav class="md-nav" aria-label="Installation">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#a-note-on-compiling-against-the-boost-libraries" class="md-nav__link">
+    A Note on Compiling against the boost Libraries
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
 </li>
       
         <li class="md-nav__item">
@@ -353,6 +366,19 @@
     Installation
   </a>
   
+    <nav class="md-nav" aria-label="Installation">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#a-note-on-compiling-against-the-boost-libraries" class="md-nav__link">
+    A Note on Compiling against the boost Libraries
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
 </li>
       
         <li class="md-nav__item">
@@ -394,9 +420,24 @@
 <h2 id="dependencies">Dependencies</h2>
 <p>To compile ebtel++, first install the following dependencies,</p>
 <ul>
-<li><a href="https://gcc.gnu.org/">gcc</a> (at least v4.7; included with OS X, most Linux distros; <a href="https://www.cygwin.com/">cygwin</a> on Windows)</li>
-<li><a href="http://scons.org/">scons</a> (<code>pip install scons</code> via <a href="https://pypi.python.org/pypi">PyPI</a> or <code>conda install scons</code> with <a href="https://www.continuum.io/downloads">Anaconda</a>)</li>
-<li><a href="http://www.boost.org/">boost</a> (at least v1.53; <code>sudo apt-get install libboost-dev</code> on Debian Linux, <code>sudo port install boost</code> via <a href="https://www.macports.org/">Macports</a> on OS X, <a href="https://github.com/rice-solar-physics/IonPopSolver#installing-boost-from-source">from source</a> on Windows; can also be installed via <a href="https://www.continuum.io/downloads">Anaconda</a>)</li>
+<li><a href="https://gcc.gnu.org/">gcc</a> (at least v4.7)<ul>
+<li>included with OS X as well as most Linux distributions</li>
+<li><a href="https://www.cygwin.com/">cygwin</a> on Windows</li>
+</ul>
+</li>
+<li><a href="http://scons.org/">scons</a><ul>
+<li><code>pip install scons</code> with <a href="https://pypi.python.org/pypi">PyPI</a></li>
+<li><code>conda install scons</code> with <a href="https://www.continuum.io/downloads">Anaconda</a></li>
+</ul>
+</li>
+<li><a href="http://www.boost.org/">boost</a> (at least v1.53)<ul>
+<li><code>conda install boost</code> with <a href="https://www.continuum.io/downloads">Anaconda</a></li>
+<li><code>brew install boost</code> with <a href="https://formulae.brew.sh/formula/boost">Homebrew</a></li>
+<li><code>sudo port install boost</code> with <a href="https://ports.macports.org/port/boost/">Macports</a></li>
+<li><code>sudo apt-get install libboost-all-dev</code> on Debian Linux</li>
+<li><a href="https://www.boost.org/doc/">from source</a></li>
+</ul>
+</li>
 </ul>
 <p>Additionally, if you'd like to run the included tests and examples, you'll need the following Python dependencies, all easily installed with <a href="https://www.continuum.io/downloads">anaconda</a>,</p>
 <ul>
@@ -412,11 +453,6 @@ $<span class="w"> </span><span class="nb">cd</span><span class="w"> </span>ebtel
 $<span class="w"> </span>scons
 </code></pre></div>
 
-<p>If the compile step fails because the compiler cannot find the appropriate headers and/or libraries using the default locations, you can use the <code>--includepath</code> and/or <code>--libpath</code> flags, respectively. For example, if you've installed the Boost headers and libraries in <code>/usr/local/include</code> and <code>/usr/local/lib</code>,</p>
-<div class="codehilite"><pre><span></span><code>$<span class="w"> </span>scons<span class="w"> </span>--includepath<span class="o">=</span>/usr/local/include<span class="w"> </span>--libpath<span class="o">=</span>/usr/local/lib
-</code></pre></div>
-
-<p>For more information about the available flags that can be passed to <code>scons</code>, you can run <code>scons -h</code>.</p>
 <p>This will create an executable <code>bin/ebtel++.run</code>. To see the available command line parameters,</p>
 <div class="codehilite"><pre><span></span><code>$<span class="w"> </span>bin/ebtel++.run<span class="w"> </span>--help
 </code></pre></div>
@@ -425,8 +461,35 @@ $<span class="w"> </span>scons
 <div class="codehilite"><pre><span></span><code>$<span class="w"> </span>bin/ebtel++.run
 </code></pre></div>
 
+<h3 id="a-note-on-compiling-against-the-boost-libraries">A Note on Compiling against the <code>boost</code> Libraries</h3>
+<p>The included <code>scons</code> configuration will do it's best to guess where to find the needed <code>boost</code> headers and how to link against the needed libraries.
+However, depending on your operating system and or installation method, the locations and names of these libraries can vary.
+As such, you may find that, when compiling using <code>scons</code>, you get errors like,</p>
+<div class="codehilite"><pre><span></span><code>ld:<span class="w"> </span>library<span class="w"> </span>not<span class="w"> </span>found<span class="w"> </span><span class="k">for</span><span class="w"> </span>-lboost_program_options-mt
+</code></pre></div>
+
+<p>Similarly, you may find that you get runtime errors about not being able to find the needed libraries when running the executable such as,</p>
+<div class="codehilite"><pre><span></span><code>dyld<span class="o">[</span><span class="m">21052</span><span class="o">]</span>:<span class="w"> </span>Library<span class="w"> </span>not<span class="w"> </span>loaded:<span class="w"> </span><span class="s1">&#39;@rpath/libboost_program_options.dylib&#39;</span>
+<span class="w">  </span>Referenced<span class="w"> </span>from:<span class="w"> </span><span class="s1">&#39;/home/user/ebtelPlusPlus/bin/ebtel++.run&#39;</span>
+<span class="w">  </span>Reason:<span class="w"> </span>tried:<span class="w"> </span><span class="s1">&#39;/usr/local/lib/libboost_program_options.dylib&#39;</span><span class="w"> </span><span class="o">(</span>no<span class="w"> </span>such<span class="w"> </span>file<span class="o">)</span>,<span class="w"> </span><span class="s1">&#39;/usr/lib/libboost_program_options.dylib&#39;</span><span class="w"> </span><span class="o">(</span>no<span class="w"> </span>such<span class="w"> </span>file<span class="o">)</span>
+<span class="o">[</span><span class="m">1</span><span class="o">]</span><span class="w">    </span><span class="m">21052</span><span class="w"> </span>abort<span class="w">      </span>bin/ebtel++.run
+</code></pre></div>
+
+<p>To resolve these issues, there are a number of optional flags that you can pass to <code>scons</code> when compiling the executable.
+For more information about the available flags, you can run <code>scons -h</code>.
+Additionally, <a href="https://github.com/rice-solar-physics/ebtelPlusPlus/issues/74">this GitHub issue</a> may be helpful when debugging compile-time or runtime issues related to correctly compiling and linking against <code>boost</code>.</p>
+<p>As an example, if you have installed <code>boost</code> with Anaconda in the environment <code>ebtel-env</code> and your Anaconda installation is located at <code>/home/user/anaconda</code>, then you will likely need to pass the following flags to <code>scons</code>,</p>
+<div class="codehilite"><pre><span></span><code>$<span class="w"> </span>scons<span class="w"> </span><span class="se">\</span>
+<span class="w">   </span>--includepath<span class="o">=</span>/home/user/anaconda/envs/ebtel-env/include<span class="w"> </span><span class="se">\</span>
+<span class="w">   </span>--libpath<span class="o">=</span>/home/user/anaconda/envs/ebtel-env/lib<span class="w"> </span><span class="se">\</span>
+<span class="w">   </span>--linkflags<span class="o">=</span><span class="s2">&quot;-rpath /home/user/anaconda/envs/ebtel-env/lib&quot;</span><span class="w"> </span><span class="se">\</span>
+<span class="w">   </span>--libs<span class="o">=</span>boost_program_options
+</code></pre></div>
+
+<p>If instead you've installed <code>boost</code> in the base Anaconda environment, then you can just drop the <code>envs/ebtel-env</code> portion of each of the above paths.
+Note that the line breaks are only for readability and are not actually necessary when you compile your code.</p>
 <h2 id="testing">Testing</h2>
-<p>If you've installed the above Python dependencies, you can also run the tests using,</p>
+<p>To install the needed Python dependencies and run the tests,</p>
 <div class="codehilite"><pre><span></span><code>$<span class="w"> </span>pip<span class="w"> </span>install<span class="w"> </span>-r<span class="w"> </span>requirements/requirements-test.txt
 $<span class="w"> </span>pytest
 </code></pre></div>
