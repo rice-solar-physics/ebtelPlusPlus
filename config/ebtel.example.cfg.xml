@@ -1,11 +1,12 @@
-<!--making a pull request which will be used to modify ebtel code with area expansion/-->
-
 <?xml version="1.0" ?>
 <root>
   <total_time>5000.0</total_time>
   <tau>1.0</tau>
   <tau_max>1e+300</tau_max>
   <loop_length>40.0e+8</loop_length>
+  <loop_length_ratio_tr_total>0.0</loop_length_ratio_tr_total>
+  <area_ratio_tr_corona>1.0</area_ratio_tr_corona>
+  <area_ratio_0_corona>1.0</area_ratio_0_corona>
   <saturation_limit>1.0</saturation_limit>
   <force_single_fluid>False</force_single_fluid>
   <use_c1_loss_correction>True</use_c1_loss_correction>
