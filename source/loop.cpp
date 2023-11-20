@@ -28,6 +28,8 @@ Loop::Loop(char *config)
   parameters.tau = std::stod(get_element_text(root,"tau"));
   parameters.tau_max = std::stod(get_element_text(root,"tau_max"));
   parameters.loop_length = std::stod(get_element_text(root,"loop_length"));
+  parameters.area_ratio_tr_corona = std::stod(get_element_text(root, "area_ratio_tr_corona"));
+  parameters.area_ratio_0_corona = std::stod(get_element_text(root, "area_ratio_0_corona"));
   parameters.adaptive_solver_error = std::stod(get_element_text(root,"adaptive_solver_error"));
   parameters.adaptive_solver_safety = std::stod(get_element_text(root,"adaptive_solver_safety"));
   parameters.saturation_limit = std::stod(get_element_text(root,"saturation_limit"));
@@ -48,6 +50,11 @@ Loop::Loop(char *config)
 
   //Estimate results array length
   parameters.N = int(std::ceil(parameters.total_time/parameters.tau));
+
+  //Compute components of loop length
+  double loop_length_ratio_tr_total = std::stod(get_element_text(root, "loop_length_ratio_tr_total"));
+  parameters.loop_length_tr = parameters.loop_length * loop_length_ratio_tr_total;
+  parameters.loop_length_corona = parameters.loop_length - parameters.loop_length_tr;
 
   //Initialize heating object
   heater = new Heater(get_element(root,"heating"));
@@ -102,6 +109,7 @@ void Loop::SetState(state_type state)
 
 state_type Loop::CalculateInitialConditions(void)
 {
+  // TODO: Modify initial conditions calculation to account for area expansion
   int i = 0;
   int i_max = 100;
   double tol = 1e-2;
@@ -122,7 +130,7 @@ state_type Loop::CalculateInitialConditions(void)
     {
       c1 = CalculateC1(temperature_old, temperature_old, density_old);
     }
-    temperature = c2*std::pow(3.5*c1/(1.0 + c1)*std::pow(parameters.loop_length,2)*heat/(SPITZER_ELECTRON_CONDUCTIVITY + SPITZER_ION_CONDUCTIVITY),2.0/7.0);
+    temperature = c2*std::pow(3.5*c1/(1.0 + c1)*std::pow(parameters.loop_length_corona,2)*heat/(SPITZER_ELECTRON_CONDUCTIVITY + SPITZER_ION_CONDUCTIVITY),2.0/7.0);
     radiative_loss = CalculateRadiativeLoss(temperature);
     density = std::sqrt(heat/(radiative_loss*(1.0 + c1)));
     error_temperature = std::abs(temperature - temperature_old)/temperature;
@@ -187,6 +195,7 @@ void Loop::PrintToFile(int num_steps)
 
 void Loop::CalculateDerivs(const state_type &state, state_type &derivs, double time)
 {
+  // TODO: Modify derivatives to account for area expansion
   double dpe_dt,dpi_dt,dn_dt,dTe_dt,dTi_dt;
   double psi_tr,psi_c,xi,R_tr,enthalpy_flux;
 
@@ -291,7 +300,7 @@ double Loop::CalculateThermalConduction(double temperature, double density, std:
     k_B = parameters.boltzmann_correction*BOLTZMANN_CONSTANT;
   }
 
-  f_c = -2.0/7.0*kappa*std::pow(temperature/c2,3.5)/parameters.loop_length;
+  f_c = -2.0/7.0*kappa*std::pow(temperature/c2,3.5)/parameters.loop_length_corona;
 
   if(parameters.use_flux_limiting)
   {
@@ -359,6 +368,7 @@ double Loop::CalculateCollisionFrequency(double temperature_e,double density)
 
 double Loop::CalculateC1(double temperature_e, double temperature_i, double density)
 {
+  // TODO: Modify c1 calculation for area expansion
   double c1;
   double density_eqm_2,density_ratio;
 
@@ -371,14 +381,14 @@ double Loop::CalculateC1(double temperature_e, double temperature_i, double dens
 
   if(parameters.use_c1_grav_correction)
   {
-    grav_correction = std::exp(4.0*std::sin(_PI_/5.0)*parameters.loop_length/(_PI_*scale_height));
+    grav_correction = std::exp(4.0*std::sin(_PI_/5.0)*parameters.loop_length_corona/(_PI_*scale_height));
   }
   if(parameters.use_c1_loss_correction)
   {
     loss_correction = 1.95e-18/std::pow(temperature_e,2.0/3.0)/radiative_loss;
   }
 
-  density_eqm_2 = (SPITZER_ELECTRON_CONDUCTIVITY + SPITZER_ION_CONDUCTIVITY)*std::pow(temperature_e/c2,3.5)/(3.5*std::pow(parameters.loop_length,2)*c1_eqm0*loss_correction*grav_correction*radiative_loss);
+  density_eqm_2 = (SPITZER_ELECTRON_CONDUCTIVITY + SPITZER_ION_CONDUCTIVITY)*std::pow(temperature_e/c2,3.5)/(3.5*std::pow(parameters.loop_length_corona,2)*c1_eqm0*loss_correction*grav_correction*radiative_loss);
   density_ratio = std::pow(density,2)/density_eqm_2;
 
   if(density_ratio<1.0)
@@ -422,24 +432,30 @@ void Loop::CalculateAbundanceCorrection(double helium_to_hydrogen_ratio)
 
 double Loop::CalculateVelocity(double temperature_e, double temperature_i, double pressure_e)
 {
+  //TODO: Modify enthalpy calculation for expansion
   double c4 = CalculateC4();
   double density = pressure_e/(BOLTZMANN_CONSTANT*temperature_e);
   double c1 = CalculateC1(temperature_e,temperature_i,density);
-  double R_tr = c1*std::pow(density,2)*CalculateRadiativeLoss(temperature_e)*parameters.loop_length;
+  double R_tr = c1*std::pow(density,2)*CalculateRadiativeLoss(temperature_e)*parameters.loop_length_corona;
   double fe = CalculateThermalConduction(temperature_e,density,"electron");
   double fi = CalculateThermalConduction(temperature_i,density,"ion");
   double sc = CalculateScaleHeight(temperature_e,temperature_i);
   double xi = temperature_e/temperature_i/parameters.boltzmann_correction;
 
   double coefficient = c4*xi*GAMMA_MINUS_ONE/(GAMMA*(xi+1));
-  double pressure_e_0 = pressure_e*std::exp(2.0*parameters.loop_length*std::sin(_PI_/5.0)/(_PI_*sc));
+  double pressure_e_0 = pressure_e*std::exp(2.0*parameters.loop_length_corona*std::sin(_PI_/5.0)/(_PI_*sc));
   double enthalpy_flux = -(fe + fi + R_tr);
 
   return coefficient*enthalpy_flux/pressure_e_0;
 }
 
-double Loop::CalculateTimeNextHeating(double time)
+double Loop::ControlTimeStep(const state_type &state, double time, double tau)
 {
-  double max_timestep = heater->Get_Time_To_Next_Heating_Change(time);
-  return max_timestep;
+  double tau_tc = 4e-10*state[2]*pow(parameters.loop_length_corona, 2)*pow(std::fmax(state[3], state[4]), -2.5);
+  // Limit abrupt changes in the timestep with safety factor
+  tau = std::fmax(std::fmin(tau, 0.5*tau_tc), parameters.adaptive_solver_safety*tau);
+  // Control maximum timestep
+  tau = std::fmin(tau, parameters.tau_max);
+  tau = std::fmin(tau, heater->Get_Time_To_Next_Heating_Change(time));
+  return tau;
 }
