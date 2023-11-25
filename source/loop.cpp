@@ -209,21 +209,27 @@ void Loop::CalculateDerivs(const state_type &state, state_type &derivs, double t
   double collision_frequency = CalculateCollisionFrequency(state[3],state[2]);
 
   xi = state[0]/state[1];
-  R_tr = c1*std::pow(state[2],2)*radiative_loss*parameters.loop_length;
+  // R_tr = c1*std::pow(state[2],2)*radiative_loss*parameters.loop_length;
+  R_c = std::pow(state[2],2)*radiative_loss*parameters.loop_length_corona;
   psi_tr = (f_e + R_tr - xi*f_i)/(1.0 + xi);
   psi_c = BOLTZMANN_CONSTANT*state[2]*collision_frequency*(state[4] - state[3]);
   enthalpy_flux = GAMMA_MINUS_ONE/GAMMA*(-f_e - R_tr + psi_tr);
+  L_a = paramter.loop_length_corona + (A_tr/A_c) * parameter.loop_length_tr
 
-  dpe_dt = GAMMA_MINUS_ONE*(heat*heater->partition + 1.0/parameters.loop_length*(psi_tr - R_tr*(1.0 + 1.0/c1))) + psi_c;
-  dpi_dt = GAMMA_MINUS_ONE*(heat*(1.0 - heater->partition) - 1.0/parameters.loop_length*psi_tr) - psi_c;
+  // dpe_dt = GAMMA_MINUS_ONE*(heat*heater->partition + 1.0/parameters.loop_length*(psi_tr - R_tr*(1.0 + 1.0/c1))) + psi_c;
+  dpe_dt = GAMMA_MINUS_ONE*(heat*heater->partition + psi_c/L_a*(1 + parameters.area_ratio_tr_corona + (psi_tr/psi_c)) - R_c/L_a*(1 + parameters.area_ratio_tr_corona*c1));
+  // dpi_dt = GAMMA_MINUS_ONE*(heat*(1.0 - heater->partition) - 1.0/parameters.loop_length*psi_tr) - psi_c;
+  dpi_dt = GAMMA_MINUS_ONE*(heat*(1.0 - heater->partition) - psi_c/L_a*(1 + parameters.area_ratio_tr_corona + (psi_tr/psi_c)));
   // Divide pressure equally if single-fluid case
+parameters.area_t
   if(parameters.force_single_fluid)
   {
     double tmp_dpe_dt = dpe_dt;
     dpe_dt = 0.5*(tmp_dpe_dt + dpi_dt);
     dpi_dt = 0.5*(tmp_dpe_dt + dpi_dt);
   }
-  dn_dt = c2/(c3*parameters.loop_length*BOLTZMANN_CONSTANT*state[3])*enthalpy_flux;
+ // dn_dt = c2/(c3*parameters.loop_length*BOLTZMANN_CONSTANT*state[3])*enthalpy_flux;
+ dn_dt = ((c2 * (GAMMA_MINUS_ONE))/(c3*parameters.loop_length_corona*BOLTZMANN_CONSTANT*state[3]))*(parameters.area_ratio_tr_corona*(parameters.loop_length_corona/L_a)(c1-parameters.loop_length_tr/parameters.loop_length_corona)*R_c-(parameters.area_ratio_tr_corona*(paramters.loop_length_corona/L_a))*(psi_tr/psi_c - parameters.loop_length_tr/parameters.loop_length_corona)*psi_c+parameters.area_ratio_0_corona*f_e)
 
   dTe_dt = state[3]*(1/state[0]*dpe_dt - 1/state[2]*dn_dt);
   dTi_dt = state[4]*(1/state[1]*dpi_dt - 1/state[2]*dn_dt);
