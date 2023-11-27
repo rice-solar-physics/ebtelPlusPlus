@@ -44,7 +44,7 @@ void Dem::CalculateDEM(int i)
 {
   // TODO: check whether DEM calculation needs to be modified for expansion
   state_type loop_state = loop->GetState();
-  double velocity = loop->CalculateVelocity(loop_state[3],loop_state[4],loop_state[0]);
+  double velocity = loop->CalculateVelocity();
   double scale_height = loop->CalculateScaleHeight(loop_state[3],loop_state[4]);
   double f_e = loop->CalculateThermalConduction(loop_state[3],loop_state[2],"electron");
   double R_tr = loop->CalculateC1(loop_state[3],loop_state[4],loop_state[2])*pow(loop_state[2],2)*loop->CalculateRadiativeLoss(loop_state[3])*loop->parameters.loop_length_corona;

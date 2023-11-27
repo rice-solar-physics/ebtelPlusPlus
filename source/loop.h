@@ -160,16 +160,13 @@ public:
   static double CalculateC3(void);
 
   // Calculate velocity
-  // @temperature_e electron temperature (in K)
-  // @temperature_i ion temperature (in K)
-  // @pressure_e electron pressure (in dyne cm$^{-2}$ s$^{-1}$)
   //
-  // Calculate the velocity using the base electron pressure and the enthalpy
+  // Calculate the velocity using the base total pressure and the enthalpy
   // flux as determined by our EBTEL equations.
   //
   // @return velocity averaged over the loop half-length (in cm s$^{-1}$)
   //
-  double CalculateVelocity(double temperature_e,double temperature_i,double pressure_e);
+  double CalculateVelocity(void);
 
   // Calculate temperature scale height
   // @temperature_e electron temperature (in K)
@@ -217,7 +214,7 @@ public:
   //
   // @return the time derivatives of the electron pressure, ion pressure, and density
   //
-  static void CalculateDerivs(const state_type &state, state_type &derivs, double time);
+  static void CalculateDerivatives(const state_type &state, state_type &derivs, double time);
 
   // Control the integration time step
   // @tau time step (in s)
