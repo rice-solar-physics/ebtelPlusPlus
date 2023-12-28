@@ -1,0 +1,1 @@
+g++ -O3 -Wall -shared -std=c++11 -undefined dynamic_lookup `python3 -m pybind11 --includes` -I . -I $HOME/homebrew/include pybind11_wrapper.cpp -o ebtelplusplus`python3-config --extension-suffix` -L. -lebtel++ -Wl,-rpath,

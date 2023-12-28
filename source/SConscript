@@ -6,5 +6,6 @@ import glob
 
 Import('env')
 sources = glob.glob('*.cpp') + glob.glob('util/*.cpp')
+sources.remove('pybind11_wrapper.cpp')
 objs = env.Object(sources)
 Return('objs')

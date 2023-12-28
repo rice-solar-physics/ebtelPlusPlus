@@ -64,3 +64,4 @@ if not os.path.exists('bin'):
     os.makedirs('bin')
 
 env.Program('bin/ebtel++.run', allobjs)
+env.Library('source/ebtel++.so', allobjs)
