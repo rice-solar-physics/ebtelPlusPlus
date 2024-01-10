@@ -59,7 +59,9 @@ int main(int argc, char *argv[])
 
   // Set up Runge-Kutta integrator
   typedef boost::numeric::odeint::runge_kutta_cash_karp54< state_type > stepper_type;
-  auto controlled_stepper = boost::numeric::odeint::make_controlled(loop->parameters.adaptive_solver_error, loop->parameters.adaptive_solver_error, stepper_type());
+  auto controlled_stepper = boost::numeric::odeint::make_controlled(loop->parameters.adaptive_solver_error,
+                                                                    loop->parameters.adaptive_solver_error,
+                                                                    stepper_type());
 
   // Integrate
   num_steps = 0;
@@ -85,18 +87,13 @@ int main(int argc, char *argv[])
         }
         old_tau = tau;
         old_t = t;
-        fail = controlled_stepper.try_step(loop->CalculateDerivs,state,t,tau);
+        fail = controlled_stepper.try_step(loop->CalculateDerivatives,state,t,tau);
         // Force NaNs to fail
         if(!fail) fail = obs->CheckNan(state,t,tau,old_t,old_tau);
         num_failures++;
       }
-      // Enforce thermal conduction timescale limit
-      double tau_tc = 4e-10*state[2]*pow(loop->parameters.loop_length,2)*pow(std::fmax(state[3],state[4]),-2.5);
-      // Limit abrupt changes in the timestep with safety factor
-      tau = std::fmax(std::fmin(tau,0.5*tau_tc),loop->parameters.adaptive_solver_safety*tau);
-      // Control maximum timestep
-      tau = std::fmin(tau,loop->parameters.tau_max);
-      tau = std::fmin(tau,loop->CalculateTimeNextHeating(t));
+      // Enforce limits on timescale due to thermal conduction and heating
+      tau = loop->ControlTimeStep(state, t, tau);
       // Save the state
       obs->Observe(state,t);
       num_steps += 1;
@@ -104,8 +101,14 @@ int main(int argc, char *argv[])
   }
   else
   {
-    // Constant timestep integration
-    num_steps = boost::numeric::odeint::integrate_const( controlled_stepper, loop->CalculateDerivs, state, loop->parameters.tau, loop->parameters.total_time, loop->parameters.tau, obs->Observe);
+    // Constant time step integration
+    num_steps = boost::numeric::odeint::integrate_const(controlled_stepper,
+                                                        loop->CalculateDerivatives,
+                                                        state, 
+                                                        loop->parameters.tau,
+                                                        loop->parameters.total_time,
+                                                        loop->parameters.tau,
+                                                        obs->Observe);
   }
 
   //Print results to file

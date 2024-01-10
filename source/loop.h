@@ -160,16 +160,13 @@ public:
   static double CalculateC3(void);
 
   // Calculate velocity
-  // @temperature_e electron temperature (in K)
-  // @temperature_i ion temperature (in K)
-  // @pressure_e electron pressure (in dyne cm$^{-2}$ s$^{-1}$)
   //
-  // Calculate the velocity using the base electron pressure and the enthalpy
+  // Calculate the velocity using the base total pressure and the enthalpy
   // flux as determined by our EBTEL equations.
   //
   // @return velocity averaged over the loop half-length (in cm s$^{-1}$)
   //
-  double CalculateVelocity(double temperature_e,double temperature_i,double pressure_e);
+  double CalculateVelocity(void);
 
   // Calculate temperature scale height
   // @temperature_e electron temperature (in K)
@@ -217,18 +214,18 @@ public:
   //
   // @return the time derivatives of the electron pressure, ion pressure, and density
   //
-  static void CalculateDerivs(const state_type &state, state_type &derivs, double time);
+  static void CalculateDerivatives(const state_type &state, state_type &derivs, double time);
 
-  // Calculate time until next change in heating profile
+  // Control the integration time step
+  // @tau time step (in s)
+  // @state current state of the loop
   // @time current time (in s)
   //
-  // Calculates the time until the next heating_start_rise, heating_end_rise,
-  // heating_start_decay, or heating_end_decay. Used to ensure the time stepper
-  // doesn't skip over any transitions in the heating function.
+  // Calculate the time step to account for thermal conduction as well as the time
+  // until the next heating event such that a heating event does not get skipped.
   //
-  // @return time until next change in the loop heating (in s)
-  //
-  static double CalculateTimeNextHeating(double time);
+  // @return updated time step (in s)
+  static double ControlTimeStep(const state_type &state, double time, double tau);
 };
 // Pointer to the <Loop> class
 typedef Loop* LOOP;

@@ -18,7 +18,7 @@ AddOption('--linkflags', dest='linkflags', type='string', nargs=1, action='store
 
 
 subdirs = ['source']
-cxx_flags = ['-std=c++11',]
+cxx_flags = ['-std=c++14',]
 try:
     CXX = os.environ['CXX']
 except KeyError:

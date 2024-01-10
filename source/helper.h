@@ -26,8 +26,14 @@ struct Parameters {
   double tau;
   /* Maximum allowed timestep (in s) when using adaptive solver */
   double tau_max;
-  /* Loop half length (in cm) */
-  double loop_length;
+  /* Coronal portion of loop half length (in cm) */
+  double loop_length_corona;
+  /* Ratio of transition region portion of loop to coronal portion of loop */
+  double loop_length_ratio_tr_corona;
+  /* Ratio of average cross-sectional area in transition region to average cross-sectional area in corona */
+  double area_ratio_tr_corona;
+  /* Ratio of cross-sectional area at TR-corona interface to average cross-sectional area in corona */
+  double area_ratio_0_corona;
   /* Truncation error tolerance for adaptive solver */
   double adaptive_solver_error;
   /* Safety factor on allowed timestep for adaptive solver */
