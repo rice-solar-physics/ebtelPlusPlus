@@ -12,6 +12,7 @@
   <calculate_dem>False</calculate_dem>
   <save_terms>False</save_terms>
   <use_adaptive_solver>False</use_adaptive_solver>
+  <use_variable_abundances>True</use_variable_abundances>
   <output_filename>ebtel++_results_file.txt</output_filename>
   <adaptive_solver_error>1e-6</adaptive_solver_error>
   <adaptive_solver_safety>0.5</adaptive_solver_safety>
