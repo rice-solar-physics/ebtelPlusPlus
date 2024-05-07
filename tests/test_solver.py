@@ -28,6 +28,7 @@ def base_config():
         'save_terms': False,
         'adaptive_solver_error': 1e-6,
         'adaptive_solver_safety': 0.5,
+        'use_adaptive_solver': True,
         'c1_cond0': 2.0,
         'c1_rad0': 0.6,
         'helium_to_hydrogen_ratio': 0.075,
@@ -77,3 +78,29 @@ def test_quantities_equal_adaptive_static(adaptive_results, static_results, name
     # an error > 10%; due to static case not rising fast enough
     assert np.allclose(adapt_interp[5:], static_results[name][5:].to_value(adaptive_results[name].unit),
                        rtol=1e-2, atol=atol)
+    
+
+@pytest.mark.parametrize(('A_c', 'A_0', 'A_tr'), [
+    (3, 1, 1),
+    (3, 2, 1),
+    (1, 1, 1),
+])
+def test_area_expansion(A_c, A_0, A_tr, base_config):
+    # This is just a smoke test for the area expansion functionality
+    config = base_config.copy()
+    config['loop_length_ratio_tr_total'] = 0.15
+    config['area_ratio_tr_corona'] = A_tr/A_c
+    config['area_ratio_0_corona'] = A_0/A_c
+    results = run_ebtelplusplus(config)
+    vars = [
+        'electron_temperature',
+        'ion_temperature',
+        'density',
+        'electron_pressure',
+        'ion_pressure',
+        'velocity',
+        'time',
+    ]
+    for v in vars:
+        assert v in results
+        assert not np.any(np.isnan(results[v]))
