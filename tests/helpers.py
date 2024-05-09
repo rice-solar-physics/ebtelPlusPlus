@@ -77,7 +77,7 @@ def read_idl_test_data(data_filename, ebtel_idl_path, config):
     varnames = ['time', 'temperature', 'density', 'pressure', 'velocity']
     varunits = ['s', 'K', 'cm-3', 'dyne cm-2', 'cm s-1']
     # Generate and save if it does not exist
-    if ebtel_idl_path is not None: #not os.path.isfile(data_filename):
+    if not os.path.isfile(data_filename):
         data = generate_idl_test_data(ebtel_idl_path, config)
         data_array = np.zeros(data['time'].shape+(len(data),))
         for i, v in enumerate(varnames):
@@ -107,8 +107,12 @@ def plot_comparison(r_cpp, r_idl):
     plt.subplot(121)
     plt.plot(r_cpp['time'], r_cpp['electron_temperature'], label='ebtel++')
     plt.plot(r_idl['time'], r_idl['temperature'], label='IDL')
+    plt.xlabel('$t$ [s]')
+    plt.ylabel('$T$ [K]')
     plt.legend()
     plt.subplot(122)
     plt.plot(r_cpp['time'], r_cpp['density'])
     plt.plot(r_idl['time'], r_idl['density'])
+    plt.xlabel('$t$ [s]')
+    plt.ylabel('$n$ [cm$^{-3}$]')
     plt.show()

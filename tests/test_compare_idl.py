@@ -6,7 +6,7 @@ from collections import OrderedDict
 
 import astropy.units as u
 
-from .helpers import DATA_DIR, read_idl_test_data, run_ebtelplusplus
+from .helpers import DATA_DIR, read_idl_test_data, run_ebtelplusplus, plot_comparison
 
 
 @pytest.fixture
@@ -49,10 +49,12 @@ def base_config():
 
 
 @pytest.mark.xfail
-def test_compare_idl_single_event(base_config, tmpdir, ebtel_idl_path):
+def test_compare_idl_single_event(base_config, ebtel_idl_path, plot_idl_comparisons):
     config = base_config.copy()
     r_cpp = run_ebtelplusplus(config)
     r_idl = read_idl_test_data(DATA_DIR / 'idl_single_event.json', ebtel_idl_path, config)
+    if plot_idl_comparisons:
+        plot_comparison(r_cpp, r_idl)
     assert u.allclose(r_cpp['electron_temperature'], r_idl['temperature'], rtol=1e-2)
     assert u.allclose(r_cpp['ion_temperature'], r_idl['temperature'], rtol=1e-2)
     assert u.allclose(r_cpp['density'], r_idl['density'], rtol=1e-2)
@@ -66,13 +68,15 @@ def test_compare_idl_single_event(base_config, tmpdir, ebtel_idl_path):
     (3, 2, 1),
     (1, 1, 1),
 ])
-def test_compare_idl_area_expansion(A_c, A_0, A_tr, base_config, tmpdir, ebtel_idl_path):
+def test_compare_idl_area_expansion(A_c, A_0, A_tr, base_config, ebtel_idl_path, plot_idl_comparisons):
     config = base_config.copy()
     config['loop_length_ratio_tr_total'] = 0.15
     config['area_ratio_tr_corona'] = A_tr/A_c
     config['area_ratio_0_corona'] = A_0/A_c
     r_cpp = run_ebtelplusplus(config)
     r_idl = read_idl_test_data(DATA_DIR / f'idl_area_expansion_{A_c=}_{A_0=}_{A_tr=}.json', ebtel_idl_path, config)
+    if plot_idl_comparisons:
+        plot_comparison(r_cpp, r_idl)
     assert u.allclose(r_cpp['electron_temperature'], r_idl['temperature'], rtol=1e-2)
     assert u.allclose(r_cpp['ion_temperature'], r_idl['temperature'], rtol=1e-2)
     assert u.allclose(r_cpp['density'], r_idl['density'], rtol=1e-2)
