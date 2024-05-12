@@ -42,17 +42,18 @@ Dem::~Dem(void)
 
 void Dem::CalculateDEM(int i)
 {
+  // TODO: check whether DEM calculation needs to be modified for expansion
   state_type loop_state = loop->GetState();
-  double velocity = loop->CalculateVelocity(loop_state[3],loop_state[4],loop_state[0]);
+  double velocity = loop->CalculateVelocity();
   double scale_height = loop->CalculateScaleHeight(loop_state[3],loop_state[4]);
   double f_e = loop->CalculateThermalConduction(loop_state[3],loop_state[2],"electron");
-  double R_tr = loop->CalculateC1(loop_state[3],loop_state[4],loop_state[2])*pow(loop_state[2],2)*loop->CalculateRadiativeLoss(loop_state[3])*loop->parameters.loop_length;
+  double R_tr = loop->CalculateC1(loop_state[3],loop_state[4],loop_state[2])*pow(loop_state[2],2)*loop->CalculateRadiativeLoss(loop_state[3])*loop->parameters.loop_length_corona;
   // Calculate coronal temperature range
   double temperature_corona_max = fmax(loop_state[3]/loop->CalculateC2(),1.1e+4);
   double temperature_corona_min = fmax(loop_state[3]*(2.0 - 1.0/loop->CalculateC2()),1.0e+4);
   // Calculate coronal emission
   double delta_temperature = pow(10.0,0.5/100.0)*temperature_corona_max - pow(10.0,-0.5/100.0)*temperature_corona_min;
-  double coronal_emission = 2.0*pow(loop_state[2],2)*loop->parameters.loop_length/delta_temperature;
+  double coronal_emission = 2.0*pow(loop_state[2],2)*loop->parameters.loop_length_corona/delta_temperature;
 
   bool dem_tr_negative = false;
   std::vector<double> tmp_dem_corona(__temperature.size()), tmp_dem_tr(__temperature.size());
@@ -138,7 +139,7 @@ double Dem::CalculateDEMTR(int j,double density,double velocity,double pressure,
   {
     double a = (SPITZER_ELECTRON_CONDUCTIVITY + SPITZER_ION_CONDUCTIVITY)*pow(__temperature[j],1.5);
     double b = -GAMMA*(1.0+ loop->parameters.boltzmann_correction)*BOLTZMANN_CONSTANT/GAMMA_MINUS_ONE*density*velocity;
-    double density_squared = pow(pressure/BOLTZMANN_CONSTANT/__temperature[j],2)*exp(4.0*loop->parameters.loop_length*sin(_PI_/5.0)/scale_height/_PI_);
+    double density_squared = pow(pressure/BOLTZMANN_CONSTANT/__temperature[j],2)*exp(4.0*loop->parameters.loop_length_corona*sin(_PI_/5.0)/scale_height/_PI_);
     double c = -density_squared*__radiative_loss[j];
     double dTds_plus = (-b + sqrt(pow(b,2) - 4.0*a*c))/(2.0*a);
     double dTds_minus = (-b - sqrt(pow(b,2) - 4.0*a*c))/(2.0*a);
