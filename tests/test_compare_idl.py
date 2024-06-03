@@ -23,6 +23,7 @@ def base_config():
         'use_flux_limiting': False,
         'use_adaptive_solver': False,
         'calculate_dem': False,
+        'radiation': 'power_law',
         'save_terms': False,
         'adaptive_solver_error': 1e-6,
         'adaptive_solver_safety': 0.5,

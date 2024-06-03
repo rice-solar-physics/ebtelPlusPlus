@@ -9,6 +9,7 @@ Loop class definition
 #include "helper.h"
 #include "heater.h"
 #include "util/constants.h"
+#include "util/misc.h"
 
 // Loop object
 //
@@ -51,6 +52,11 @@ private:
   //
   void CalculateAbundanceCorrection(double helium_to_hydrogen_ratio);
 
+  // Read the csv data file radiative loss rate as a function of temperature and
+  // abundance factor.
+  void ReadRadiativeLossData();
+
+
 public:
 
   /* Instance of the <Heater> object */
@@ -61,7 +67,7 @@ public:
 
   /* Terms structure */
   static Terms terms;
-
+  
   // Constructor
   // @config main configuration file
   //
@@ -203,9 +209,13 @@ public:
   // communication) and twice the coronal abundances of Meyer (1985). This is the same power-law
   // radiative loss function as is implemented in the HYDRAD code and the EBTEL IDL code.
   //
+  // The overloaded function uses the abundance factor to adjust the radiative loss curve for abundances
+  // that are not strictly coronal, as in the original function.
+  //
   // @return radiative loss function (in erg cm$^3$ s$^{-1}$)
   //
   static double CalculateRadiativeLoss(double temperature);
+  static double CalculateRadiativeLoss(double temperature, double density);
 
   // Calculate derivatives of EBTEL equations
   // @state current state of the loop
@@ -229,6 +239,16 @@ public:
   // @return time until next change in the loop heating (in s)
   //
   static double CalculateTimeNextHeating(double time);
+  
+  // Calculate the current abundance factor
+  // 
+  // Calculates the abundance factor as it varies due to filling and draining of the loop
+  // from chromospheric evaporation, which is assumed to bring photospheric material (AF = 1.0).  It is
+  // also assumed to be initially coronal (AF = 4.0)
+  //
+  // @return the abundance factor (unitless)
+  static double CalculateAbundanceFactor(double density);
+  
 };
 // Pointer to the <Loop> class
 typedef Loop* LOOP;

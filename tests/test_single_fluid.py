@@ -25,6 +25,7 @@ def base_config():
         'calculate_dem': False,
         'save_terms': False,
         'use_adaptive_solver': True,
+        'radiation': 'power_law',
         'adaptive_solver_error': 1e-6,
         'adaptive_solver_safety': 0.5,
         'c1_cond0': 2.0,

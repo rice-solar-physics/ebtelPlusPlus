@@ -52,6 +52,15 @@ struct Parameters {
   bool save_terms;
   /* Switch for using the adaptive solver option */
   bool use_adaptive_solver;
+  /* What radiative losses to assume:
+        power_law: use the default power-law fit to radiative losses (Klimchuk et al 2008)
+        variable: use a look-up table with time-variable abundance factor f
+        photospheric: use a look-up table with abundance factor f = 1
+        coronal: use a look-up table with abundance factor f = 4
+  */
+  std::string radiation;
+  /* Switch for using time-variable abundances */
+  bool use_variable_abundances;
   /* Path to output file */
   std::string output_filename;
   /* XML node holding DEM calculation parameters */
@@ -66,6 +75,15 @@ struct Parameters {
   double surface_gravity;
   /* Number of grid points */
   size_t N;
+  
+  /* Arrays for variable abundance radiative losses */
+  double log10_loss_rate_array[101][7][7];
+  double log10_temperature_array[101];
+  double initial_density;
+  double previous_density;
+  double initial_abundance_factor;
+  double previous_abundance_factor;
+  bool upflowing, initial_radiation;
 };
 
 // Structure to hold all results

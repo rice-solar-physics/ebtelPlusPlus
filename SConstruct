@@ -31,9 +31,13 @@ env = Environment(CXX=CXX, CXXFLAGS=cxx_flags)
 
 if 'darwin' in sys.platform:
     print("Using Mac OS X compile options.")
-    env.Append(CPPPATH=['/opt/local/include', '/usr/include/malloc'])
+    if 'HOMEBREW_PREFIX' in os.environ:
+        env.Append(CPPPATH=['/opt/local/include','/usr/include/malloc','/opt/homebrew/include'])
+        env.Append(LIBPATH=['/opt/homebrew/lib'])
+    else:
+        env.Append(CPPPATH=['/opt/local/include', '/usr/include/malloc'])
+        env.Append(LIBPATH=['/opt/local/lib'])
     env.Append(LIBS=['boost_program_options-mt'])
-    env.Append(LIBPATH=['/opt/local/lib'])
 elif 'linux' in sys.platform:
     print("Using Linux compile options.")
     env.Append(CPPPATH=['/usr/include'])
