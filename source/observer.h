@@ -55,7 +55,10 @@ public:
   // Boost integrator does not check for NaNs so this is done manually. If a
   // NaN is found anywhere in the state vector, the state and time are set 
   // back to the previous step and the timestep is reduced.
+  // The overloaded function, for use with the static time step solver, only checks for NaNs
+  // and does not reset the state or time.  
   int CheckNan(state_type &state, double &time, double &tau, double old_time, double old_tau);
+  int CheckNan(state_type &state);
 };
 // Pointer to the <Observer> class
 typedef Observer* OBSERVER;

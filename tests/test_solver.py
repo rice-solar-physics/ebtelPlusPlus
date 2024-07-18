@@ -83,3 +83,15 @@ def test_insufficient_heating(base_config, value):
     config['heating']['background'] = value
     with pytest.raises(EbtelPlusPlusError):
         run_ebtelplusplus(config)
+
+@pytest.mark.parametrize('use_adaptive_solver', [True, False])
+def test_NaNs_in_solver(base_config, use_adaptive_solver):
+    config = base_config.copy()
+    config['use_adaptive_solver'] = use_adaptive_solver
+    config['heating']['events'] = [
+                {'event': {'rise_start': 0.0, 'rise_end': 100.0, 'decay_start': 100.0,
+                           'decay_end': 200.0, 'magnitude': -10.0}}
+            ]
+    with pytest.raises(EbtelPlusPlusError):
+        run_ebtelplusplus(config)
+

@@ -106,6 +106,10 @@ int main(int argc, char *argv[])
   {
     // Constant timestep integration
     num_steps = boost::numeric::odeint::integrate_const( controlled_stepper, loop->CalculateDerivs, state, loop->parameters.tau, loop->parameters.total_time, loop->parameters.tau, obs->Observe);
+    if(obs->CheckNan(state))
+    {
+        throw std::runtime_error("NaNs were detected in the output.  Check the input configuration.");
+    }
   }
 
   //Print results to file

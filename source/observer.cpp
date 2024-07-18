@@ -60,3 +60,18 @@ int Observer::CheckNan(state_type &state, double &time, double &tau, double old_
   // Pass otherwise
   return 0;
 }
+
+int Observer::CheckNan(state_type &state)
+{
+  // Check for NaNs in the state
+  for(int j=0; j<state.size(); j++)
+  {
+    if(std::isnan(state[j]))
+    {
+      return 1;
+    }
+  }
+
+  // Pass otherwise
+  return 0;
+}
